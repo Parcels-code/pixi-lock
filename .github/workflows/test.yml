@@ -1,4 +1,4 @@
-name: Test
+name: Test cache-pixi-lock action
 
 on:
   push:
@@ -6,9 +6,18 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        cache-frequency: [daily, weekly, monthly]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -20,6 +29,8 @@ jobs:
 
       - name: Run create-pixi-lock action
         uses: ./create-pixi-lock
+        with:
+          cache-frequency: ${{ matrix.cache-frequency }}
 
       - name: Verify pixi.lock exists
         run: |

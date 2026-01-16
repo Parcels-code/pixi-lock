@@ -1,5 +1,5 @@
 name: Create Pixi Lock
-description: Generate and cache a pixi.lock file, restoring from cache when available
+description: Generate and cache a pixi.lock file, restoring from cache when available.
 
 inputs:
   pixi-version:
