@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          path: create-pixi-lock
+
+      - name: Copy test files to working directory
+        run: cp -r create-pixi-lock/ci/test/* .
+
+      - name: Run create-pixi-lock action
+        uses: ./create-pixi-lock
+
+      - name: Verify pixi.lock exists
+        run: |
+          if [ -f "pixi.lock" ]; then
+            echo "pixi.lock exists"
+          else
+            echo "pixi.lock does not exist"
+            exit 1
+          fi
