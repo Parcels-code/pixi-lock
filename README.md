@@ -20,11 +20,11 @@ steps:
 
   - uses: Parcels-code/create-pixi-lock@v1
     with:
-      pixi-version: ${{ env.PIXI_VERSION }}$ # Default is latest - same as setup-pixi
+      pixi-version: ${{ env.PIXI_VERSION }} # Default is latest - same as setup-pixi
       cache-frequency: daily # options are "daily", "weekly", "monthly". Default "daily"
   - uses: prefix-dev/setup-pixi@v0.9.3
     with:
-      pixi-version: ${{ env.PIXI_VERSION }}$
+      pixi-version: ${{ env.PIXI_VERSION }}
 ```
 
 > [!NOTE]
