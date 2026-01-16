@@ -20,7 +20,7 @@ steps:
 
   - uses: Parcels-code/create-pixi-lock@v1
     with:
-      pixi-version: ${{ env.PIXI_VERSION }}$ # Default is latest
+      pixi-version: ${{ env.PIXI_VERSION }}$ # Default is latest - same as setup-pixi
       cache-frequency: daily # options are "daily", "weekly", "monthly". Default "daily"
   - uses: prefix-dev/setup-pixi@v0.9.3
     with:
@@ -29,10 +29,9 @@ steps:
 
 > [!NOTE]
 > Pinning your Pixi version in CI and updating this pin manually ensures better
-> Stability. Otherwise updates to Pixi which (a) change the format of the lock > file would break your CI for a period of `cache-frequency`, or (b) change the format of
-> `pixi.toml`, which would break your CI until you fix it.
-> This avoids any potentially breaking changes down the line (e.g., changes
-> in lock file behaviour
+> stability. Otherwise updates to Pixi which introduce breaking changes in:
+> - (a) the format of the lock file - which would break your CI for a period of `cache-frequency`, or
+> - (b) the format of `pixi.toml` - which would break your CI until you fix it.
 
 ## Why not commit the lock file?
 
