@@ -5,13 +5,22 @@ inputs:
   cache-key:
     description: "The cache key from create-and-cache"
     required: true
-  fallback-key:
-    description: "The fallback cache key from create-and-cache (for midnight edge cases)"
-    required: true
 
 runs:
   using: "composite"
   steps:
+    - name: Calculate fallback key
+      id: fallback
+      shell: bash
+      run: |
+        cache_key="${{ inputs.cache-key }}"
+        # Extract base (everything before the last _) and date (after the last _)
+        base="${cache_key%_*}"
+        current_date="${cache_key##*_}"
+        # Calculate yesterday's date
+        yesterday=$(date -d "${current_date} - 1 day" +'%Y-%m-%d' 2>/dev/null || date -j -f '%Y-%m-%d' -v-1d "${current_date}" +'%Y-%m-%d')
+        echo "key=${base}_${yesterday}" >> "$GITHUB_OUTPUT"
+
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@v5
       id: restore
@@ -19,5 +28,5 @@ runs:
         path: pixi.lock
         key: ${{ inputs.cache-key }}
         restore-keys: |
-          ${{ inputs.fallback-key }}
+          ${{ steps.fallback.outputs.key }}
         fail-on-cache-miss: true
