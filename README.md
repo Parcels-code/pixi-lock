@@ -1,36 +1,52 @@
-# create-pixi-lock
+# pixi-lock
 
 > [!NOTE]
 > This repo is likely to be moved to https://github.com/xarray-contrib
 
-This action creates a `pixi.lock` file and caches it for future use. Subsequent runs of this action on the same day restore the lock file instead of generating it anew.
+This repo provides two GitHub Actions for managing `pixi.lock` files with caching:
+
+- **`create-and-cache`**: Generates a `pixi.lock` file and caches it
+- **`restore`**: Restores the cached `pixi.lock` file in downstream jobs
+
+This two-action pattern is designed for CI workflows where you want to generate the lock file once and reuse it across multiple matrix jobs.
 
 
 ## Usage
-
-Basic usage with a set version of Pixi as well as daily cached lockfile:
 
 ```yaml
 env:
   PIXI_VERSION: "v0.63.0"
 
-# ...
-steps:
-  - uses: actions/checkout@v4
+jobs:
+  cache-pixi-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Parcels-code/pixi-lock/create-and-cache@v1
+        with:
+          pixi-version: ${{ env.PIXI_VERSION }}
 
-  - uses: Parcels-code/create-pixi-lock@v1
-    with:
-      pixi-version: ${{ env.PIXI_VERSION }} # Default is latest - same as setup-pixi
-      cache-frequency: daily # options are "daily", "weekly", "monthly". Default "daily"
-  - uses: prefix-dev/setup-pixi@v0.9.3
-    with:
-      pixi-version: ${{ env.PIXI_VERSION }}
+  ci:
+    needs: cache-pixi-lock
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Parcels-code/pixi-lock/restore@v1
+        with:
+          pixi-version: ${{ env.PIXI_VERSION }}
+      - uses: prefix-dev/setup-pixi@v0.9.3
+        with:
+          pixi-version: ${{ env.PIXI_VERSION }}
+      # ... your CI steps
 ```
 
 > [!NOTE]
-> Pinning your Pixi version in CI and updating this pin manually ensures better
+> Using the same Pixi version in CI as from lockfile generation ensures better
 > stability. Otherwise updates to Pixi which introduce breaking changes in:
-> - (a) the format of the lock file - which would break your CI for a period of `cache-frequency`, or
+> - (a) the format of the lock file - which would break your CI for the day, or
 > - (b) the format of `pixi.toml` - which would break your CI until you fix it.
 
 ## Why not commit the lock file?

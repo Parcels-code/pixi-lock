@@ -1,4 +1,4 @@
-name: Test cache-pixi-lock action
+name: Test pixi-lock actions
 
 on:
   push:
@@ -14,27 +14,53 @@ env:
   PIXI_VERSION: "v0.63.0"
 
 jobs:
+  cache-pixi-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          path: pixi-lock
+
+      - name: Copy test files to working directory
+        shell: bash
+        run: cp -r pixi-lock/ci/test/* .
+
+      - name: Run create-and-cache action
+        uses: ./pixi-lock/create-and-cache
+        with:
+          pixi-version: ${{ env.PIXI_VERSION }}
+
+      - name: Verify pixi.lock exists
+        shell: bash
+        run: |
+          if [ -f "pixi.lock" ]; then
+            echo "pixi.lock exists"
+          else
+            echo "pixi.lock does not exist"
+            exit 1
+          fi
+
   test:
+    needs: cache-pixi-lock
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        cache-frequency: [daily, weekly, monthly]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          path: create-pixi-lock
+          path: pixi-lock
 
       - name: Copy test files to working directory
         shell: bash
-        run: cp -r create-pixi-lock/ci/test/* .
+        run: cp -r pixi-lock/ci/test/* .
 
-      - name: Run create-pixi-lock action
-        uses: ./create-pixi-lock
+      - name: Restore pixi.lock from cache
+        uses: ./pixi-lock/restore
         with:
-          cache-frequency: ${{ matrix.cache-frequency }}
           pixi-version: ${{ env.PIXI_VERSION }}
 
       - name: Verify pixi.lock exists
@@ -51,7 +77,6 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.3
         with:
           pixi-version: ${{ env.PIXI_VERSION }}
-
 
       - name: Verify environment installed
         shell: bash
