@@ -12,8 +12,11 @@ outputs:
     description: "The pixi version used (for passing to downstream jobs)"
     value: ${{ inputs.pixi-version }}
   cache-key:
-    description: "The cache key used (for debugging)"
+    description: "The cache key used"
     value: ${{ steps.cache-key.outputs.key }}
+  fallback-key:
+    description: "The fallback cache key (yesterday's date)"
+    value: ${{ steps.cache-key.outputs.fallback-key }}
 
 runs:
   using: "composite"
@@ -23,8 +26,10 @@ runs:
       shell: bash
       run: |
         today=$(date +'%Y-%m-%d')
+        yesterday=$(date -d 'yesterday' +'%Y-%m-%d' 2>/dev/null || date -v-1d +'%Y-%m-%d')
         base="pixi-lock_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}"
         echo "key=${base}_${today}" >> "$GITHUB_OUTPUT"
+        echo "fallback-key=${base}_${yesterday}" >> "$GITHUB_OUTPUT"
 
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@v5

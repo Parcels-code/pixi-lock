@@ -16,6 +16,10 @@ env:
 jobs:
   cache-pixi-lock:
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
+      fallback-key: ${{ steps.create-and-cache.outputs.fallback-key }}
+      pixi-version: ${{ steps.create-and-cache.outputs.pixi-version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -27,6 +31,7 @@ jobs:
         run: cp -r pixi-lock/ci/test/* .
 
       - name: Run create-and-cache action
+        id: create-and-cache
         uses: ./pixi-lock/create-and-cache
         with:
           pixi-version: ${{ env.PIXI_VERSION }}
@@ -61,7 +66,8 @@ jobs:
       - name: Restore pixi.lock from cache
         uses: ./pixi-lock/restore
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
+          fallback-key: ${{ needs.cache-pixi-lock.outputs.fallback-key }}
 
       - name: Verify pixi.lock exists
         shell: bash

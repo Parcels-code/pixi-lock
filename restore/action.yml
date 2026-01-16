@@ -2,30 +2,22 @@ name: Restore Pixi Lock
 description: Restore a previously cached pixi.lock file.
 
 inputs:
-  pixi-version:
-    description: "Version of pixi used when creating the lock file (must match create-and-cache)"
-    required: false
-    default: "latest"
+  cache-key:
+    description: "The cache key from create-and-cache"
+    required: true
+  fallback-key:
+    description: "The fallback cache key from create-and-cache (for midnight edge cases)"
+    required: true
 
 runs:
   using: "composite"
   steps:
-    - name: Get cache key # fallback to yesterdays cache (in case of workflow runs at midnight)
-      id: cache-key
-      shell: bash
-      run: |
-        today=$(date +'%Y-%m-%d')
-        yesterday=$(date -d 'yesterday' +'%Y-%m-%d' 2>/dev/null || date -v-1d +'%Y-%m-%d')
-        base="pixi-lock_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}"
-        echo "key=${base}_${today}" >> "$GITHUB_OUTPUT"
-        echo "restore-key=${base}_${yesterday}" >> "$GITHUB_OUTPUT"
-
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@v5
       id: restore
       with:
         path: pixi.lock
-        key: ${{ steps.cache-key.outputs.key }}
+        key: ${{ inputs.cache-key }}
         restore-keys: |
-          ${{ steps.cache-key.outputs.restore-key }}
+          ${{ inputs.fallback-key }}
         fail-on-cache-miss: true

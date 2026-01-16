@@ -14,17 +14,19 @@ This two-action pattern is designed for CI workflows where you want to generate 
 ## Usage
 
 ```yaml
-env:
-  PIXI_VERSION: "v0.63.0"
-
 jobs:
   cache-pixi-lock:
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.pixi-lock.outputs.cache-key }}
+      fallback-key: ${{ steps.pixi-lock.outputs.fallback-key }}
+      pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
     steps:
       - uses: actions/checkout@v4
       - uses: Parcels-code/pixi-lock/create-and-cache@v1
+        id: pixi-lock
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          pixi-version: v0.63.0
 
   ci:
     needs: cache-pixi-lock
@@ -36,18 +38,38 @@ jobs:
       - uses: actions/checkout@v4
       - uses: Parcels-code/pixi-lock/restore@v1
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
+          fallback-key: ${{ needs.cache-pixi-lock.outputs.fallback-key }}
       - uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
       # ... your CI steps
 ```
 
+### Inputs & Outputs
+
+#### `create-and-cache`
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `pixi-version` | Version of pixi to use for generating the lock file | No | `latest` |
+
+| Output | Description |
+|--------|-------------|
+| `pixi-version` | The pixi version used |
+| `cache-key` | The cache key (includes today's date) |
+| `fallback-key` | The fallback cache key (yesterday's date) |
+
+#### `restore`
+
+| Input | Description | Required |
+|-------|-------------|----------|
+| `cache-key` | The cache key from `create-and-cache` | Yes |
+| `fallback-key` | The fallback cache key from `create-and-cache` | Yes |
+
 > [!NOTE]
-> Using the same Pixi version in CI as from lockfile generation ensures better
-> stability. Otherwise updates to Pixi which introduce breaking changes in:
-> - (a) the format of the lock file - which would break your CI for the day, or
-> - (b) the format of `pixi.toml` - which would break your CI until you fix it.
+> The cache key includes the current date, so the lock file is regenerated daily.
+> The fallback key handles edge cases where the restore job runs just after midnight.
 
 ## Why not commit the lock file?
 
