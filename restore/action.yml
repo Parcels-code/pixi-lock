@@ -27,6 +27,7 @@ runs:
       with:
         path: pixi.lock
         key: ${{ inputs.cache-key }}
+        enableCrossOsArchive: true
         restore-keys: |
           ${{ steps.fallback.outputs.key }}
         fail-on-cache-miss: true

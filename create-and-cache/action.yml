@@ -51,3 +51,4 @@ runs:
       with:
         path: pixi.lock
         key: ${{ steps.cache-key.outputs.key }}
+        enableCrossOsArchive: true
