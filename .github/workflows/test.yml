@@ -2,7 +2,7 @@ name: Test cache-pixi-lock action
 
 on:
   push:
-    branches: [main]
+    branches: [main, test-me/*]
   pull_request:
     branches: [main]
 
