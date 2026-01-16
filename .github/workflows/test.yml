@@ -45,7 +45,7 @@ jobs:
             exit 1
           fi
 
-  test:
+  restore-and-install:
     needs: cache-pixi-lock
     runs-on: ${{ matrix.os }}
     strategy:
@@ -80,7 +80,7 @@ jobs:
       - name: Setup pixi and install environment
         uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          pixi-version:  ${{ needs.cache-pixi-lock.outputs.pixi-version }}
 
       - name: Verify environment installed
         shell: bash

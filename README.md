@@ -28,7 +28,7 @@ jobs:
       - uses: Parcels-code/pixi-lock/create-and-cache@v1
         id: pixi-lock
         with:
-          pixi-version: v0.63.0
+          pixi-version: ... # TODO: update with your selected pixi version
 
   ci:
     needs: cache-pixi-lock
@@ -41,7 +41,7 @@ jobs:
       - uses: Parcels-code/pixi-lock/restore@v1
         with:
           cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
-      - uses: prefix-dev/setup-pixi@v0.9.3
+      - uses: prefix-dev/setup-pixi@v...  # TODO: update with your selected setup-pixi version
         with:
           pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
       # ... your CI steps
