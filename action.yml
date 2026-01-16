@@ -6,21 +6,41 @@ inputs:
     description: "Version of pixi to use for generating the lock file"
     required: false
     default: "latest"
+  cache-frequency:
+    description: "How often to regenerate the lock file: 'daily', 'weekly', or 'monthly'"
+    required: false
+    default: "daily"
 
 runs:
   using: "composite"
   steps:
-    - name: Get current date
-      id: date
+    - name: Get cache key
+      id: cache-key
       shell: bash
-      run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+      run: |
+        case "${{ inputs.cache-frequency }}" in
+          daily)
+            key=$(date +'%Y-%m-%d')
+            ;;
+          weekly)
+            key=$(date +'%Y-week-%V')
+            ;;
+          monthly)
+            key=$(date +'%Y-month-%m')
+            ;;
+          *)
+            echo "Invalid cache-frequency: ${{ inputs.cache-frequency }}. Must be 'daily', 'weekly', or 'monthly'."
+            exit 1
+            ;;
+        esac
+        echo "key=$key" >> "$GITHUB_OUTPUT"
 
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@v5
       id: restore
       with:
         path: pixi.lock
-        key: ${{ steps.date.outputs.date }}_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}
+        key: ${{ steps.cache-key.outputs.key }}_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}
 
     - name: Setup pixi
       uses: prefix-dev/setup-pixi@v0.9.3
@@ -39,4 +59,4 @@ runs:
       if: ${{ !steps.restore.outputs.cache-hit }}
       with:
         path: pixi.lock
-        key: ${{ steps.date.outputs.date }}_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}
+        key: ${{ steps.cache-key.outputs.key }}_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}
