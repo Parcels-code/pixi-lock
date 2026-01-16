@@ -29,3 +29,15 @@ jobs:
             echo "pixi.lock does not exist"
             exit 1
           fi
+
+      - name: Setup pixi and install environment
+        uses: prefix-dev/setup-pixi@v0.9.3
+
+      - name: Verify environment installed
+        run: |
+          if [ -d ".pixi/envs/default" ]; then
+            echo "Environment installed successfully"
+          else
+            echo "Environment not installed"
+            exit 1
+          fi
