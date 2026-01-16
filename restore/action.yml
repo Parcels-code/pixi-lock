@@ -10,7 +10,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Get cache key
+    - name: Get cache key # fallback to yesterdays cache (in case of workflow runs at midnight)
       id: cache-key
       shell: bash
       run: |
