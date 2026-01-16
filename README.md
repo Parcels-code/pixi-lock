@@ -8,7 +8,10 @@ This repo provides two GitHub Actions for managing `pixi.lock` files with cachin
 - **`create-and-cache`**: Generates a `pixi.lock` file and caches it
 - **`restore`**: Restores the cached `pixi.lock` file in downstream jobs
 
-This two-action pattern is designed for CI workflows where you want to generate the lock file once and reuse it across multiple matrix jobs.
+This two-action pattern is so that the lockfile can be omitted from the git
+history, but still be generated in a performant manner (i.e., regenerated
+and cached with a key that depends on `pixi.toml` and the date - 
+then shared across jobs).
 
 
 ## Usage
