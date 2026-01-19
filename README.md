@@ -1,7 +1,7 @@
 # pixi-lock
 
 > [!NOTE]
-> This repo is likely to be moved to https://github.com/xarray-contrib
+> This repo will be moved to https://github.com/prefix-dev
 
 This repo provides two GitHub Actions for managing `pixi.lock` files with caching:
 
