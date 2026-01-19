@@ -1,0 +1,54 @@
+name: Create and Cache Pixi Lock
+description: Generate a pixi.lock file and cache it for use by other jobs.
+
+inputs:
+  pixi-version:
+    description: "Version of pixi to use for generating the lock file"
+    required: false
+    default: "latest"
+
+outputs:
+  pixi-version:
+    description: "The pixi version used (for passing to downstream jobs)"
+    value: ${{ inputs.pixi-version }}
+  cache-key:
+    description: "The cache key used"
+    value: ${{ steps.cache-key.outputs.key }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get cache key
+      id: cache-key
+      shell: bash
+      run: |
+        today=$(date +'%Y-%m-%d')
+        key="pixi-lock_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}_${today}"
+        echo "key=${key}" >> "$GITHUB_OUTPUT"
+
+    - name: Restore pixi.lock from cache
+      uses: actions/cache/restore@v5
+      id: restore
+      with:
+        path: pixi.lock
+        key: ${{ steps.cache-key.outputs.key }}
+
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.9.3
+      if: ${{ !steps.restore.outputs.cache-hit }}
+      with:
+        pixi-version: ${{ inputs.pixi-version }}
+        run-install: false
+
+    - name: Run pixi lock
+      if: ${{ !steps.restore.outputs.cache-hit }}
+      shell: bash
+      run: pixi lock
+
+    - name: Save pixi.lock to cache
+      uses: actions/cache/save@v5
+      if: ${{ !steps.restore.outputs.cache-hit }}
+      with:
+        path: pixi.lock
+        key: ${{ steps.cache-key.outputs.key }}
+        enableCrossOsArchive: true
