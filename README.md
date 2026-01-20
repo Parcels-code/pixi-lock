@@ -19,7 +19,7 @@ then shared across jobs).
 ```yaml
 jobs:
   cache-pixi-lock:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       cache-key: ${{ steps.pixi-lock.outputs.cache-key }}
       pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
