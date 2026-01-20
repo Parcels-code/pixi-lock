@@ -29,6 +29,10 @@ jobs:
         id: pixi-lock
         with:
           pixi-version: ... # TODO: update with your selected pixi version
+      - uses: actions/upload-artifact@v6 # make available as an artifact for local testing
+        with:
+          name: pixi-lock
+          path: pixi.lock
 
   ci:
     needs: cache-pixi-lock
