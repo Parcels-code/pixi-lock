@@ -19,16 +19,20 @@ then shared across jobs).
 ```yaml
 jobs:
   cache-pixi-lock:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       cache-key: ${{ steps.pixi-lock.outputs.cache-key }}
       pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: Parcels-code/pixi-lock/create-and-cache@v1
+      - uses: Parcels-code/pixi-lock/create-and-cache@... # TODO: Copy the hash for the rev you want to install from 
         id: pixi-lock
         with:
           pixi-version: ... # TODO: update with your selected pixi version
+      - uses: actions/upload-artifact@v6 # make available as an artifact for local testing
+        with:
+          name: pixi-lock
+          path: pixi.lock
 
   ci:
     needs: cache-pixi-lock
@@ -38,7 +42,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: Parcels-code/pixi-lock/restore@v1
+      - uses: Parcels-code/pixi-lock/restore@ # TODO: Copy the hash for the rev you want to install from (same as above)
         with:
           cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
       - uses: prefix-dev/setup-pixi@v...  # TODO: update with your selected setup-pixi version
