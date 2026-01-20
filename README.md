@@ -1,9 +1,9 @@
 # pixi-lock
 
 > [!NOTE]
-> This repo will be moved to https://github.com/prefix-dev
+> This repo may be moved to https://github.com/prefix-dev
 
-This repo provides two GitHub Actions for managing `pixi.lock` files with caching:
+This repo provides two GitHub Actions for generating and caching `pixi.lock` files in CI:
 
 - **`create-and-cache`**: Generates a `pixi.lock` file and caches it
 - **`restore`**: Restores the cached `pixi.lock` file in downstream jobs
@@ -76,7 +76,12 @@ Committing your lock file is considered good practice when working on applicatio
 
 When developing and testing _library_ code, we don't want our environments to stay completely fixed - we want to test against environments covering a wide range of package versions to ensure compatability, including an environment includ the latest available versions of packages.
 
-The easiest way to test against the latest versions of packages - and avoid the noisy commit history (and additional overhead) of regularly updating a lock file in git - is instead to ignore the lock file and rely on developers and CI to generate their own lock files. This forgoes perfect reprodubility between developer machines, and with CI machines.
+The _easiest_ way to test against the latest versions of packages - and avoid the noisy commit history (and additional overhead) of regularly updating a lock file in git - is instead to ignore the lock file and rely on developers and CI to generate their own lock files. This much simpler setup forgoes perfect reprodubility between developer machines, and with CI machines - which may be a worthwhile tradeoff for your project.
+
+See the following threads for more detailed discussion:
+- [prefix.dev Discord: Should you commit the lockfile](https://discord.com/channels/1082332781146800168/1462778624212996209)
+- [Scientific Python Discord: lock files for libraries](https://discord.com/channels/786703927705862175/1450619697224487083)
+- https://github.com/prefix-dev/pixi/issues/5325
 
 
 ## Dev notes
