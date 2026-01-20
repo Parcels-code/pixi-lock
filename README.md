@@ -25,7 +25,7 @@ jobs:
       pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: Parcels-code/pixi-lock/create-and-cache@v1
+      - uses: Parcels-code/pixi-lock/create-and-cache@... # TODO: Copy the hash for the rev you want to install from 
         id: pixi-lock
         with:
           pixi-version: ... # TODO: update with your selected pixi version
@@ -38,7 +38,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: Parcels-code/pixi-lock/restore@v1
+      - uses: Parcels-code/pixi-lock/restore@ # TODO: Copy the hash for the rev you want to install from (same as above)
         with:
           cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
       - uses: prefix-dev/setup-pixi@v...  # TODO: update with your selected setup-pixi version
