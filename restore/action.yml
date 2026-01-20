@@ -9,6 +9,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Check cache-key
+      shell: bash
+      run: |
+        if [[ -z "${{ inputs.cache-key }}" ]]; then
+          echo "::error::cache-key cannot be an empty string"
+          exit 1
+        fi
+
     - name: Calculate fallback key
       id: fallback
       shell: bash
