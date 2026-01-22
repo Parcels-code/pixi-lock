@@ -15,7 +15,7 @@ env:
 
 jobs:
   clear-cache:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       actions: write
     steps:
@@ -46,7 +46,7 @@ jobs:
 
   cache-pixi-lock:
     needs: clear-cache
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
       pixi-version: ${{ steps.create-and-cache.outputs.pixi-version }}
@@ -82,7 +82,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-slim, macos-latest, windows-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
