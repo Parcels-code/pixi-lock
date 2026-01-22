@@ -41,6 +41,7 @@ jobs:
             echo "$remaining"
             exit 1
           fi
+          sleep 5
           echo "Cache cleared"
 
   cache-pixi-lock:
