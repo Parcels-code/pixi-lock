@@ -34,6 +34,7 @@ jobs:
               sleep 5
             done
           done
+          sleep 5
           echo "Verifying all caches are cleared..."
           remaining=$(gh cache list --repo ${{ github.repository }} --json key --jq '.[].key' | grep '^pixi-lock_' || true)
           if [ -n "$remaining" ]; then
@@ -41,7 +42,6 @@ jobs:
             echo "$remaining"
             exit 1
           fi
-          sleep 5
           echo "Cache cleared"
 
   cache-pixi-lock:
