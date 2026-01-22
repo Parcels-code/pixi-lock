@@ -14,6 +14,7 @@ env:
   PIXI_VERSION: "v0.63.0"
 
 jobs:
+  # TODO: Add a job that clears the GitHub cache
   cache-pixi-lock:
     runs-on: ubuntu-latest
     outputs:
