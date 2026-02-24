@@ -51,37 +51,37 @@ jobs:
           # Test OS values with fixed test-folder and pixi-version
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
             pixi-version: ""
           - os: macos-latest
             test-folder: just-pixi-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
             pixi-version: ""
           - os: windows-latest
             test-folder: just-pixi-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__adbacdefe20c62f204989acf366ef09911f3af89f066088613341b946be131e8_2026-02-24"
             pixi-version: ""
           # Test test-folder values with fixed OS and pixi-version
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pyproject-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__5626c1bd50c85d7a0f8cd9758f61f1d7ee8f868b7a149f7bd970dcd846b60974_2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: pyproject-and-pixi-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__b5bae43771086cb1dd79c43dc06881f8b0e006ad8c54e7269dad1a4f8ce96522_2026-02-24"
             pixi-version: ""
           # Test pixi-version values with fixed OS and test-folder
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "pixi-lock___2026-02-24"
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "pixi-lock_v0.63.2__2026-02-24"
+            expected-hash: "pixi-lock_v0.63.2_69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
             pixi-version: "v0.63.2"
     steps:
       - name: Checkout repository
