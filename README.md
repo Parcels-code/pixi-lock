@@ -10,9 +10,8 @@ This repo provides two GitHub Actions for generating and caching `pixi.lock` fil
 
 This two-action pattern is so that the lockfile can be omitted from the git
 history, but still be generated in a performant manner (i.e., regenerated
-and cached with a key that depends on `pixi.toml` and the date - 
+and cached with a key that depends on `pixi.toml` and the date -
 then shared across jobs).
-
 
 ## Usage
 
@@ -25,7 +24,7 @@ jobs:
       pixi-version: ${{ steps.pixi-lock.outputs.pixi-version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: Parcels-code/pixi-lock/create-and-cache@... # TODO: Copy the hash for the rev you want to install from 
+      - uses: Parcels-code/pixi-lock/create-and-cache@... # TODO: Copy the hash for the rev you want to install from
         id: pixi-lock
         with:
           pixi-version: ... # TODO: update with your selected pixi version
@@ -45,7 +44,7 @@ jobs:
       - uses: Parcels-code/pixi-lock/restore@ # TODO: Copy the hash for the rev you want to install from (same as above)
         with:
           cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
-      - uses: prefix-dev/setup-pixi@v...  # TODO: update with your selected setup-pixi version
+      - uses: prefix-dev/setup-pixi@v... # TODO: update with your selected setup-pixi version
         with:
           pixi-version: ${{ needs.cache-pixi-lock.outputs.pixi-version }}
       # ... your CI steps
@@ -55,20 +54,21 @@ jobs:
 
 #### `create-and-cache`
 
-| Input | Description | Required | Default |
-|-------|-------------|----------|---------|
-| `pixi-version` | Version of pixi to use for generating the lock file | No | `latest` |
+| Input          | Description                                             | Required | Default                          |
+| -------------- | ------------------------------------------------------- | -------- | -------------------------------- |
+| `pixi-version` | Version of pixi to use for generating the lock file     | No       | `latest`                         |
+| `hash-files`   | Files to use to generate the hash key for the lock file | No       | `pixi.toml` and `pyproject.toml` |
 
-| Output | Description |
-|--------|-------------|
-| `pixi-version` | The pixi version used |
-| `cache-key` | The cache key (includes today's date) |
+| Output         | Description                           |
+| -------------- | ------------------------------------- |
+| `pixi-version` | The pixi version used                 |
+| `cache-key`    | The cache key (includes today's date) |
 
 #### `restore`
 
-| Input | Description | Required |
-|-------|-------------|----------|
-| `cache-key` | The cache key from `create-and-cache` | Yes |
+| Input       | Description                           | Required |
+| ----------- | ------------------------------------- | -------- |
+| `cache-key` | The cache key from `create-and-cache` | Yes      |
 
 > [!NOTE]
 > The cache key includes the current date, so the lock file is regenerated daily.
@@ -83,6 +83,7 @@ When developing and testing _library_ code, we don't want our environments to st
 The _easiest_ way to test against the latest versions of packages - and avoid the noisy commit history (and additional overhead) of regularly updating a lock file in git - is instead to ignore the lock file and rely on developers and CI to generate their own lock files. This much simpler setup forgoes perfect reprodubility between developer machines, and with CI machines - which may be a worthwhile tradeoff for your project.
 
 See the following threads for more detailed discussion:
+
 - [prefix.dev Discord: Should you commit the lockfile](https://discord.com/channels/1082332781146800168/1462778624212996209)
 - [Scientific Python Discord: lock files for libraries](https://discord.com/channels/786703927705862175/1450619697224487083)
 - https://github.com/prefix-dev/pixi/issues/5325

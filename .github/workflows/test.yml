@@ -10,9 +10,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PIXI_VERSION: "v0.63.0"
-
 jobs:
   clear-cache:
     runs-on: ubuntu-slim
@@ -44,12 +41,48 @@ jobs:
           fi
           echo "Cache cleared"
 
-  cache-pixi-lock:
+  test-cache-restore-install:
     needs: clear-cache
-    runs-on: ubuntu-slim
-    outputs:
-      cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
-      pixi-version: ${{ steps.create-and-cache.outputs.pixi-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Test OS values with fixed test-folder and pixi-version
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
+            pixi-version: ""
+          - os: macos-latest
+            test-folder: just-pixi-toml
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
+            pixi-version: ""
+          - os: windows-latest
+            test-folder: just-pixi-toml
+            expected-hash: "pixi-lock__adbacdefe20c62f204989acf366ef09911f3af89f066088613341b946be131e8_2026-02-24"
+            pixi-version: ""
+          # Test test-folder values with fixed OS and pixi-version
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
+            pixi-version: ""
+          - os: ubuntu-latest
+            test-folder: just-pyproject-toml
+            expected-hash: "pixi-lock__4a057faded2062ff018955c0be1db1b9e1d2fb8d1fe4303d8b778af7fd9e411d_2026-02-24"
+            pixi-version: ""
+          - os: ubuntu-latest
+            test-folder: pyproject-and-pixi-toml
+            expected-hash: "pixi-lock__b5bae43771086cb1dd79c43dc06881f8b0e006ad8c54e7269dad1a4f8ce96522_2026-02-24"
+            pixi-version: ""
+          # Test pixi-version values with fixed OS and test-folder
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            expected-hash: "pixi-lock__69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
+            pixi-version: ""
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            expected-hash: "pixi-lock_v0.63.2_69110db0bf39d7ce64fd774c7078ccd56ebf8542d9a1e86f84e63011634dc43f_2026-02-24"
+            pixi-version: "v0.63.2"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -58,13 +91,27 @@ jobs:
 
       - name: Copy test files to working directory
         shell: bash
-        run: cp -r pixi-lock/ci/test/* .
+        run: cp -r pixi-lock/ci/test/${{ matrix.test-folder }}/* .
 
       - name: Run create-and-cache action
         id: create-and-cache
         uses: ./pixi-lock/create-and-cache
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          pixi-version: ${{ matrix.pixi-version }}
+
+      - name: Verify cache key hash matches expected
+        shell: bash
+        run: |
+          actual_hash="${{ steps.create-and-cache.outputs.cache-key }}"
+          expected_hash="${{ matrix.expected-hash }}"
+          echo "Expected hash: $expected_hash"
+          echo "Actual hash: $actual_hash"
+          if [ "$actual_hash" != "$expected_hash" ]; then
+            echo "ERROR: Hash mismatch!"
+            echo "Please update the expected-hash in the workflow matrix to: $actual_hash"
+            exit 1
+          fi
+          echo "Hash matches expected value"
 
       - name: Verify pixi.lock exists
         shell: bash
@@ -76,29 +123,20 @@ jobs:
             exit 1
           fi
 
-  restore-and-install:
-    needs: cache-pixi-lock
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-slim, macos-latest, windows-latest]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          path: pixi-lock
-
-      - name: Copy test files to working directory
+      - name: Cleanup pixi.lock
         shell: bash
-        run: cp -r pixi-lock/ci/test/* .
+        run: rm pixi.lock
+
+      - name: Cleanup pixi install
+        shell: bash
+        run: rm -rf ~/.pixi
 
       - name: Restore pixi.lock from cache
         uses: ./pixi-lock/restore
         with:
-          cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
+          cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
 
-      - name: Verify pixi.lock exists
+      - name: Verify pixi.lock exists after restore
         shell: bash
         run: |
           if [ -f "pixi.lock" ]; then
@@ -111,7 +149,7 @@ jobs:
       - name: Setup pixi and install environment
         uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          pixi-version:  ${{ needs.cache-pixi-lock.outputs.pixi-version }}
+          pixi-version: ${{ matrix.pixi-version }}
 
       - name: Verify environment installed
         shell: bash

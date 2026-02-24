@@ -1,0 +1,14 @@
+[workspace]
+authors = ["Vecko <36369090+VeckoTheGecko@users.noreply.github.com>"]
+channels = ["conda-forge"]
+name = "test"
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64", "linux-aarch64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "*"
+numpy = "*"
+pandas = "*"
+xarray = "*"
