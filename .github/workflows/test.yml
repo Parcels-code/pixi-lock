@@ -88,7 +88,9 @@ jobs:
         uses: ./pixi-lock/restore
         with:
           cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
-
+      
+      - name: Print cache key
+        run: echo "Pixi cache key is ${{ steps.create-and-cache.outputs.cache-key }}"
       - name: Verify pixi.lock exists after restore
         shell: bash
         run: |
