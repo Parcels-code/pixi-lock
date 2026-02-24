@@ -10,9 +10,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  PIXI_VERSION: "v0.63.0"
-
 jobs:
   clear-cache:
     runs-on: ubuntu-slim
@@ -44,16 +41,15 @@ jobs:
           fi
           echo "Cache cleared"
 
-  cache-pixi-lock:
+  test-cache-restore-install:
     needs: clear-cache
-    runs-on: ubuntu-slim
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         test-folder: [just-pixi-toml, just-pyproject-toml, pyproject-and-pixi-toml]
-    outputs:
-      cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
-      pixi-version: ${{ steps.create-and-cache.outputs.pixi-version }}
+        pixi-version: ["", "v0.63.2"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -68,7 +64,7 @@ jobs:
         id: create-and-cache
         uses: ./pixi-lock/create-and-cache
         with:
-          pixi-version: ${{ env.PIXI_VERSION }}
+          pixi-version: ${{ matrix.pixi-version }}
 
       - name: Verify pixi.lock exists
         shell: bash
@@ -80,30 +76,15 @@ jobs:
             exit 1
           fi
 
-  restore-and-install:
-    needs: cache-pixi-lock
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-slim, macos-latest, windows-latest]
-        test-folder: [just-pixi-toml, just-pyproject-toml, pyproject-and-pixi-toml]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          path: pixi-lock
-
-      - name: Copy test files to working directory
-        shell: bash
-        run: cp -r pixi-lock/ci/test/${{ matrix.test-folder }}/* .
+      - name: Remove pixi.lock
+        run: rm pixi.lock
 
       - name: Restore pixi.lock from cache
         uses: ./pixi-lock/restore
         with:
-          cache-key: ${{ needs.cache-pixi-lock.outputs.cache-key }}
+          cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
 
-      - name: Verify pixi.lock exists
+      - name: Verify pixi.lock exists after restore
         shell: bash
         run: |
           if [ -f "pixi.lock" ]; then
@@ -116,7 +97,7 @@ jobs:
       - name: Setup pixi and install environment
         uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          pixi-version:  ${{ needs.cache-pixi-lock.outputs.pixi-version }}
+          pixi-version: ${{ matrix.pixi-version }}
 
       - name: Verify environment installed
         shell: bash
