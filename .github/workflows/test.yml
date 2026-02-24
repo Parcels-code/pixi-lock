@@ -51,29 +51,37 @@ jobs:
           # Test OS values with fixed test-folder and pixi-version
           - os: ubuntu-latest
             test-folder: just-pixi-toml
+            expected-hash: "..."
             pixi-version: ""
           - os: macos-latest
             test-folder: just-pixi-toml
+            expected-hash: "..."
             pixi-version: ""
           - os: windows-latest
             test-folder: just-pixi-toml
+            expected-hash: "..."
             pixi-version: ""
           # Test test-folder values with fixed OS and pixi-version
           - os: ubuntu-latest
             test-folder: just-pixi-toml
+            expected-hash: "..."
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pyproject-toml
+            expected-hash: "..."
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: pyproject-and-pixi-toml
+            expected-hash: "..."
             pixi-version: ""
           # Test pixi-version values with fixed OS and test-folder
           - os: ubuntu-latest
             test-folder: just-pixi-toml
+            expected-hash: "..."
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pixi-toml
+            expected-hash: "..."
             pixi-version: "v0.63.2"
     steps:
       - name: Checkout repository
@@ -100,7 +108,7 @@ jobs:
             echo "pixi.lock does not exist"
             exit 1
           fi
-
+      
       - name: Cleanup pixi.lock
         shell: bash
         run: rm pixi.lock
@@ -114,8 +122,19 @@ jobs:
         with:
           cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
       
-      - name: Print cache key
-        run: echo "Pixi cache key is ${{ steps.create-and-cache.outputs.cache-key }}"
+      - name: Verify cache key hash matches expected
+        shell: bash
+        run: |
+          actual_hash="${{ steps.create-and-cache.outputs.cache-key }}"
+          expected_hash="${{ matrix.expected-hash }}"
+          echo "Expected hash: $expected_hash"
+          echo "Actual hash: $actual_hash"
+          if [ "$actual_hash" != "$expected_hash" ]; then
+            echo "ERROR: Hash mismatch!"
+            echo "Please update the expected-hash in the workflow matrix to: $actual_hash"
+            exit 1
+          fi
+          echo "Hash matches expected value"
 
       - name: Verify pixi.lock exists after restore
         shell: bash
