@@ -1,0 +1,24 @@
+[project]
+name = "just-pyproject-toml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.pixi.workspace]
+authors = ["Vecko <36369090+VeckoTheGecko@users.noreply.github.com>"]
+channels = ["conda-forge"]
+name = "test"
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64", "linux-aarch64"]
+version = "0.1.0"
+
+[tool.pixi.tasks]
+
+[tool.pixi.dependencies]
+python = "*"
+numpy = "*"
+pandas = "*"
+xarray = "*"
+
+
