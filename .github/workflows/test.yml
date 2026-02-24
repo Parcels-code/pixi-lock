@@ -99,6 +99,20 @@ jobs:
         with:
           pixi-version: ${{ matrix.pixi-version }}
 
+      - name: Verify cache key hash matches expected
+        shell: bash
+        run: |
+          actual_hash="${{ steps.create-and-cache.outputs.cache-key }}"
+          expected_hash="${{ matrix.expected-hash }}"
+          echo "Expected hash: $expected_hash"
+          echo "Actual hash: $actual_hash"
+          if [ "$actual_hash" != "$expected_hash" ]; then
+            echo "ERROR: Hash mismatch!"
+            echo "Please update the expected-hash in the workflow matrix to: $actual_hash"
+            exit 1
+          fi
+          echo "Hash matches expected value"
+
       - name: Verify pixi.lock exists
         shell: bash
         run: |
@@ -121,21 +135,7 @@ jobs:
         uses: ./pixi-lock/restore
         with:
           cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
-      
-      - name: Verify cache key hash matches expected
-        shell: bash
-        run: |
-          actual_hash="${{ steps.create-and-cache.outputs.cache-key }}"
-          expected_hash="${{ matrix.expected-hash }}"
-          echo "Expected hash: $expected_hash"
-          echo "Actual hash: $actual_hash"
-          if [ "$actual_hash" != "$expected_hash" ]; then
-            echo "ERROR: Hash mismatch!"
-            echo "Please update the expected-hash in the workflow matrix to: $actual_hash"
-            exit 1
-          fi
-          echo "Hash matches expected value"
-
+          
       - name: Verify pixi.lock exists after restore
         shell: bash
         run: |
