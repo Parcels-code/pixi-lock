@@ -6,6 +6,10 @@ inputs:
     description: "Version of pixi to use for generating the lock file"
     required: false
     default: "latest"
+  hash-files:
+    description: "Files to use to generate the hash key for the lock file."
+    required: false
+    default: "{pixi.toml,pyproject.toml}"
 
 outputs:
   pixi-version:
@@ -23,7 +27,7 @@ runs:
       shell: bash
       run: |
         today=$(date +'%Y-%m-%d')
-        key="pixi-lock_${{ inputs.pixi-version }}_${{ hashFiles('pixi.toml') }}_${today}"
+        key="pixi-lock_${{ inputs.pixi-version }}_${{ hashFiles(inputs.hash-files) }}_${today}"
         echo "key=${key}" >> "$GITHUB_OUTPUT"
 
     - name: Restore pixi.lock from cache
