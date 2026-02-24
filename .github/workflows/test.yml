@@ -160,3 +160,17 @@ jobs:
             echo "Environment not installed"
             exit 1
           fi
+
+  all-checks-passed:
+    name: All checks passed
+    needs: test-cache-restore-install
+    runs-on: ubuntu-slim
+    if: always()
+    steps:
+      - name: Check if all jobs passed
+        run: |
+          if [ "${{ needs.test-cache-restore-install.result }}" != "success" ]; then
+            echo "test-cache-restore-install did not pass"
+            exit 1
+          fi
+          echo "All checks passed successfully"
