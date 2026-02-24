@@ -76,8 +76,11 @@ jobs:
             exit 1
           fi
 
-      - name: Remove pixi.lock
+      - name: Cleanup pixi.lock
         run: rm pixi.lock
+
+      - name: Cleanup pixi.lock
+        run: rm -rf ~/.pixi
 
       - name: Restore pixi.lock from cache
         uses: ./pixi-lock/restore
