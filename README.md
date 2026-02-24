@@ -58,7 +58,7 @@ jobs:
 | Input | Description | Required | Default |
 |-------|-------------|----------|---------|
 | `pixi-version` | Version of pixi to use for generating the lock file | No | `latest` |
-| `hash-files` | Files to use to generate the hash key for the lock file | No | `{pixi.toml,pyproject.toml}` |
+| `hash-files` | Files to use to generate the hash key for the lock file | No | `pixi.toml` and `pyproject.toml` |
 
 
 | Output | Description |
