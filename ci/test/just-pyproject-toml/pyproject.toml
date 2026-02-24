@@ -20,5 +20,3 @@ python = "*"
 numpy = "*"
 pandas = "*"
 xarray = "*"
-
-

@@ -122,7 +122,7 @@ jobs:
             echo "pixi.lock does not exist"
             exit 1
           fi
-      
+
       - name: Cleanup pixi.lock
         shell: bash
         run: rm pixi.lock
@@ -135,7 +135,7 @@ jobs:
         uses: ./pixi-lock/restore
         with:
           cache-key: ${{ steps.create-and-cache.outputs.cache-key }}
-          
+
       - name: Verify pixi.lock exists after restore
         shell: bash
         run: |
