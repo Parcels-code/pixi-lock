@@ -51,37 +51,37 @@ jobs:
           # Test OS values with fixed test-folder and pixi-version
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           - os: macos-latest
             test-folder: just-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           - os: windows-latest
             test-folder: just-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           # Test test-folder values with fixed OS and pixi-version
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pyproject-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: pyproject-and-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           # Test pixi-version values with fixed OS and test-folder
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock___2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pixi-toml
-            expected-hash: "..."
+            expected-hash: "pixi-lock_v0.63.2__2026-02-24"
             pixi-version: "v0.63.2"
     steps:
       - name: Checkout repository
