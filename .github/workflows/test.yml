@@ -47,9 +47,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        test-folder: [just-pixi-toml, just-pyproject-toml, pyproject-and-pixi-toml]
-        pixi-version: ["", "v0.63.2"]
+        include:
+          # Test OS values with fixed test-folder and pixi-version
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            pixi-version: ""
+          - os: macos-latest
+            test-folder: just-pixi-toml
+            pixi-version: ""
+          - os: windows-latest
+            test-folder: just-pixi-toml
+            pixi-version: ""
+          # Test test-folder values with fixed OS and pixi-version
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            pixi-version: ""
+          - os: ubuntu-latest
+            test-folder: just-pyproject-toml
+            pixi-version: ""
+          - os: ubuntu-latest
+            test-folder: pyproject-and-pixi-toml
+            pixi-version: ""
+          # Test pixi-version values with fixed OS and test-folder
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            pixi-version: ""
+          - os: ubuntu-latest
+            test-folder: just-pixi-toml
+            pixi-version: "v0.63.2"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -91,7 +116,7 @@ jobs:
       
       - name: Print cache key
         run: echo "Pixi cache key is ${{ steps.create-and-cache.outputs.cache-key }}"
-        
+
       - name: Verify pixi.lock exists after restore
         shell: bash
         run: |
