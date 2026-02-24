@@ -9,7 +9,9 @@ inputs:
   hash-files:
     description: "Files to use to generate the hash key for the lock file."
     required: false
-    default: "{pixi.toml,pyproject.toml}"
+    default: |
+      pixi.toml
+      pyproject.toml
 
 outputs:
   pixi-version:
