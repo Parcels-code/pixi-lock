@@ -77,9 +77,11 @@ jobs:
           fi
 
       - name: Cleanup pixi.lock
+        shell: bash
         run: rm pixi.lock
 
-      - name: Cleanup pixi.lock
+      - name: Cleanup pixi install
+        shell: bash
         run: rm -rf ~/.pixi
 
       - name: Restore pixi.lock from cache
