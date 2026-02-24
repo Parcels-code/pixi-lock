@@ -68,7 +68,7 @@ jobs:
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: just-pyproject-toml
-            expected-hash: "pixi-lock__5626c1bd50c85d7a0f8cd9758f61f1d7ee8f868b7a149f7bd970dcd846b60974_2026-02-24"
+            expected-hash: "pixi-lock__4a057faded2062ff018955c0be1db1b9e1d2fb8d1fe4303d8b778af7fd9e411d_2026-02-24"
             pixi-version: ""
           - os: ubuntu-latest
             test-folder: pyproject-and-pixi-toml
