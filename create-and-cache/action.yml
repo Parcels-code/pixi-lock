@@ -27,9 +27,12 @@ runs:
     - name: Get cache key
       id: cache-key
       shell: bash
+      env:
+        PIXI_VERSION: ${{ inputs.pixi-version }}
+        HASH_FILES: ${{ hashFiles(inputs.hash-files) }}
       run: |
         today=$(date +'%Y-%m-%d')
-        key="pixi-lock_${{ inputs.pixi-version }}_${{ hashFiles(inputs.hash-files) }}_${today}"
+        key="pixi-lock_${PIXI_VERSION}_${HASH_FILES}_${today}"
         echo "key=${key}" >> "$GITHUB_OUTPUT"
 
     - name: Restore pixi.lock from cache

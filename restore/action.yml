@@ -11,8 +11,10 @@ runs:
   steps:
     - name: Check cache-key
       shell: bash
+      env:
+        CACHE_KEY: ${{ inputs.cache-key }}
       run: |
-        if [[ -z "${{ inputs.cache-key }}" ]]; then
+        if [[ -z "${CACHE_KEY}" ]]; then
           echo "::error::cache-key cannot be an empty string"
           exit 1
         fi
@@ -20,8 +22,10 @@ runs:
     - name: Calculate fallback key
       id: fallback
       shell: bash
+      env:
+        CACHE_KEY: ${{ inputs.cache-key }}
       run: |
-        cache_key="${{ inputs.cache-key }}"
+        cache_key="${CACHE_KEY}"
         # Extract base (everything before the last _) and date (after the last _)
         base="${cache_key%_*}"
         current_date="${cache_key##*_}"
