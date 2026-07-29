@@ -12,6 +12,10 @@ inputs:
     default: |
       pixi.toml
       pyproject.toml
+  manifest-path:
+    description: >-
+      Path to the manifest file (i.e., `pixi.toml`) to use for the pixi CLI. Defaults to `pixi.toml`.
+    default: "pixi.toml"
 
 outputs:
   pixi-version:
