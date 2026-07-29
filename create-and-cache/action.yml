@@ -27,6 +27,9 @@ outputs:
 
 runs:
   using: "composite"
+  env:
+    MANIFEST_PATH: ${{ inputs.manifest-path }}
+
   steps:
     - name: Get cache key
       id: cache-key
@@ -38,6 +41,12 @@ runs:
         today=$(date +'%Y-%m-%d')
         key="pixi-lock_${PIXI_VERSION}_${HASH_FILES}_${today}"
         echo "key=${key}" >> "$GITHUB_OUTPUT"
+
+    - name: expected pixi lock path
+      id: meta
+      shell: bash
+      run: |
+        echo "lock-path=$(dirname $MANIFEST_PATH)/pixi.lock" >> "$GITHUB_OUTPUT"
 
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
@@ -57,12 +66,14 @@ runs:
     - name: Run pixi lock
       if: ${{ !steps.restore.outputs.cache-hit }}
       shell: bash
-      run: pixi lock
+      env:
+        MANIFEST_PATH: ${{ inputs.manifest-path }}
+      run: pixi lock --manifest-path=$MANIFEST_PATH
 
     - name: Save pixi.lock to cache
       uses: actions/cache/save@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       if: ${{ !steps.restore.outputs.cache-hit }}
       with:
-        path: pixi.lock
+        path: ${{ steps.meta.outputs.lock-path }}
         key: ${{ steps.cache-key.outputs.key }}
         enableCrossOsArchive: true
