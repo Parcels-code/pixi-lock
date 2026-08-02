@@ -33,6 +33,18 @@ runs:
         yesterday=$(date -d "${current_date} - 1 day" +'%Y-%m-%d' 2>/dev/null || date -j -f '%Y-%m-%d' -v-1d "${current_date}" +'%Y-%m-%d')
         echo "key=${base}_${yesterday}" >> "$GITHUB_OUTPUT"
 
+    - name: Calculate the lock file path
+      id: lock-path
+      run: |
+        if [[ -z "$MANIFEST_PATH ]]; then
+          lock_path=pixi.lock
+        else
+          base=$(dirname $MANIFEST_PATH)
+          lock_path="$base/pixi.lock"
+        fi
+
+        echo "lock-path=${lock_path}" >> "$GITHUB_OUTPUT"
+
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       id: restore
