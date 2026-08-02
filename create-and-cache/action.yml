@@ -27,9 +27,6 @@ outputs:
 
 runs:
   using: "composite"
-  env:
-    MANIFEST_PATH: ${{ inputs.manifest-path }}
-
   steps:
     - name: Get cache key
       id: cache-key
@@ -45,6 +42,8 @@ runs:
     - name: expected pixi lock path
       id: meta
       shell: bash
+      env:
+        MANIFEST_PATH: ${{ inputs.manifest-path }}
       run: |
         echo "lock-path=$(dirname $MANIFEST_PATH)/pixi.lock" >> "$GITHUB_OUTPUT"
 
