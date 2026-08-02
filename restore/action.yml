@@ -37,7 +37,7 @@ runs:
       id: lock-path
       shell: bash
       run: |
-        if [[ -z "$MANIFEST_PATH ]]; then
+        if [[ -z "$MANIFEST_PATH" ]]; then
           lock_path=pixi.lock
         else
           base=$(dirname $MANIFEST_PATH)
