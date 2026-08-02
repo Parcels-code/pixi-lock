@@ -35,6 +35,7 @@ runs:
 
     - name: Calculate the lock file path
       id: lock-path
+      shell: bash
       run: |
         if [[ -z "$MANIFEST_PATH ]]; then
           lock_path=pixi.lock
