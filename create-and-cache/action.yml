@@ -61,6 +61,7 @@ runs:
       with:
         pixi-version: ${{ inputs.pixi-version }}
         run-install: false
+        manifest-path: ${{ inputs.manifest-path }}
 
     - name: Run pixi lock
       if: ${{ !steps.restore.outputs.cache-hit }}
