@@ -62,7 +62,7 @@ runs:
       uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       id: restore
       with:
-        path: pixi.lock
+        path: ${{ steps.meta.outputs.lock-path }}
         key: ${{ steps.cache-key.outputs.key }}
         enableCrossOsArchive: true
 
