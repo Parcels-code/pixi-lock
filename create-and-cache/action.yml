@@ -45,8 +45,10 @@ runs:
       env:
         MANIFEST_PATH: ${{ inputs.manifest-path }}
       run: |
+        lock_path="pixi.lock"
         if [[ -n "$MANIFEST_PATH" ]]; then
           manifest_path="$MANIFEST_PATH"
+          lock_path="$(dirname ${manifest_path})/pixi.lock"
         elif [[ -f "pixi.toml" ]]; then
           manifest_path="pixi.toml"
         elif [[ -f "pyproject.toml" ]]; then
@@ -56,7 +58,7 @@ runs:
           exit 1
         fi
         echo "manifest-path=${manifest_path}" >> "$GITHUB_OUTPUT"
-        echo "lock-path=$(dirname "${manifest_path}")/pixi.lock" >> "$GITHUB_OUTPUT"
+        echo "lock-path=${lock_path}" >> "$GITHUB_OUTPUT"
 
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
