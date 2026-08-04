@@ -12,6 +12,10 @@ inputs:
     default: |
       pixi.toml
       pyproject.toml
+  manifest-path:
+    required: false
+    description: >-
+      Path to the manifest file (i.e., `pixi.toml`) to use for the pixi CLI. Defaults to `pixi.toml`, falling back to `pyproject.toml`.
 
 outputs:
   pixi-version:
@@ -35,11 +39,32 @@ runs:
         key="pixi-lock_${PIXI_VERSION}_${HASH_FILES}_${today}"
         echo "key=${key}" >> "$GITHUB_OUTPUT"
 
+    - name: Find manifest and lock paths path
+      id: meta
+      shell: bash
+      env:
+        MANIFEST_PATH: ${{ inputs.manifest-path }}
+      run: |
+        lock_path="pixi.lock"
+        if [[ -n "$MANIFEST_PATH" ]]; then
+          manifest_path="$MANIFEST_PATH"
+          lock_path="$(dirname ${manifest_path})/pixi.lock"
+        elif [[ -f "pixi.toml" ]]; then
+          manifest_path="pixi.toml"
+        elif [[ -f "pyproject.toml" ]]; then
+          manifest_path="pyproject.toml"
+        else
+          echo "Error: no manifest file found (pixi.toml or pyproject.toml)" >&2
+          exit 1
+        fi
+        echo "manifest-path=${manifest_path}" >> "$GITHUB_OUTPUT"
+        echo "lock-path=${lock_path}" >> "$GITHUB_OUTPUT"
+
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       id: restore
       with:
-        path: pixi.lock
+        path: ${{ steps.meta.outputs.lock-path }}
         key: ${{ steps.cache-key.outputs.key }}
         enableCrossOsArchive: true
 
@@ -49,16 +74,19 @@ runs:
       with:
         pixi-version: ${{ inputs.pixi-version }}
         run-install: false
+        manifest-path: ${{ steps.meta.outputs.manifest-path }}
 
     - name: Run pixi lock
       if: ${{ !steps.restore.outputs.cache-hit }}
       shell: bash
-      run: pixi lock
+      env:
+        MANIFEST_PATH: ${{ steps.meta.outputs.manifest-path }}
+      run: pixi lock --manifest-path=$MANIFEST_PATH
 
     - name: Save pixi.lock to cache
       uses: actions/cache/save@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       if: ${{ !steps.restore.outputs.cache-hit }}
       with:
-        path: pixi.lock
+        path: ${{ steps.meta.outputs.lock-path }}
         key: ${{ steps.cache-key.outputs.key }}
         enableCrossOsArchive: true
