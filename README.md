@@ -54,10 +54,11 @@ jobs:
 
 #### `create-and-cache`
 
-| Input          | Description                                             | Required | Default                          |
-| -------------- | ------------------------------------------------------- | -------- | -------------------------------- |
-| `pixi-version` | Version of pixi to use for generating the lock file     | No       | `latest`                         |
-| `hash-files`   | Files to use to generate the hash key for the lock file | No       | `pixi.toml` and `pyproject.toml` |
+| Input           | Description                                             | Required | Default                                       |
+| --------------- | ------------------------------------------------------- | -------- | --------------------------------------------- |
+| `pixi-version`  | Version of pixi to use for generating the lock file     | No       | `latest`                                      |
+| `hash-files`    | Files to use to generate the hash key for the lock file | No       | `pixi.toml` and `pyproject.toml`              |
+| `manifest-path` | Path to the manifest file to use for the pixi CLI.      | No       | `pixi.toml`, falling back to `pyproject.toml` |
 
 | Output         | Description                           |
 | -------------- | ------------------------------------- |
@@ -66,9 +67,10 @@ jobs:
 
 #### `restore`
 
-| Input       | Description                           | Required |
-| ----------- | ------------------------------------- | -------- |
-| `cache-key` | The cache key from `create-and-cache` | Yes      |
+| Input           | Description                                        | Required | Default                                       |
+| --------------- | -------------------------------------------------- | -------- | --------------------------------------------- |
+| `cache-key`     | The cache key from `create-and-cache`              | Yes      | -                                             |
+| `manifest-path` | Path to the manifest file to use for the pixi CLI. | No       | `pixi.toml`, falling back to `pyproject.toml` |
 
 > [!NOTE]
 > The cache key includes the current date, so the lock file is regenerated daily.
