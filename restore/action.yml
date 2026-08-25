@@ -5,14 +5,20 @@ inputs:
   cache-key:
     description: "The cache key from create-and-cache"
     required: true
+  manifest-path:
+    required: false
+    description: >-
+      Path to the manifest file (i.e., `pixi.toml`) to use for the pixi CLI. Defaults to `pixi.toml`, falling back to `pyproject.toml`.
 
 runs:
   using: "composite"
   steps:
     - name: Check cache-key
       shell: bash
+      env:
+        CACHE_KEY: ${{ inputs.cache-key }}
       run: |
-        if [[ -z "${{ inputs.cache-key }}" ]]; then
+        if [[ -z "${CACHE_KEY}" ]]; then
           echo "::error::cache-key cannot be an empty string"
           exit 1
         fi
@@ -20,8 +26,10 @@ runs:
     - name: Calculate fallback key
       id: fallback
       shell: bash
+      env:
+        CACHE_KEY: ${{ inputs.cache-key }}
       run: |
-        cache_key="${{ inputs.cache-key }}"
+        cache_key="${CACHE_KEY}"
         # Extract base (everything before the last _) and date (after the last _)
         base="${cache_key%_*}"
         current_date="${cache_key##*_}"
@@ -29,11 +37,26 @@ runs:
         yesterday=$(date -d "${current_date} - 1 day" +'%Y-%m-%d' 2>/dev/null || date -j -f '%Y-%m-%d' -v-1d "${current_date}" +'%Y-%m-%d')
         echo "key=${base}_${yesterday}" >> "$GITHUB_OUTPUT"
 
+    - name: Calculate the lock file path
+      id: lock-path
+      shell: bash
+      env:
+        MANIFEST_PATH: ${{ inputs.manifest-path }}
+      run: |
+        if [[ -z "$MANIFEST_PATH" ]]; then
+          lock_path=pixi.lock
+        else
+          base=$(dirname $MANIFEST_PATH)
+          lock_path="$base/pixi.lock"
+        fi
+
+        echo "lock-path=${lock_path}" >> "$GITHUB_OUTPUT"
+
     - name: Restore pixi.lock from cache
       uses: actions/cache/restore@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
       id: restore
       with:
-        path: pixi.lock
+        path: ${{ steps.lock-path.outputs.lock-path }}
         key: ${{ inputs.cache-key }}
         enableCrossOsArchive: true
         restore-keys: |

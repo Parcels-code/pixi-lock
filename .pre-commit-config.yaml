@@ -9,6 +9,10 @@ repos:
       - id: check-json
         types: [text]
         files: \.(json|ipynb)$
+  # - repo: https://github.com/zizmorcore/zizmor-pre-commit
+  #   rev: v1.23.1
+  #   hooks:
+  #     - id: zizmor
   - repo: https://github.com/rbubley/mirrors-prettier # Update mirror as official mirror is deprecated
     rev: v3.6.2
     hooks:
