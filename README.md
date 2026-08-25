@@ -89,3 +89,8 @@ See the following threads for more detailed discussion:
 - [prefix.dev Discord: Should you commit the lockfile](https://discord.com/channels/1082332781146800168/1462778624212996209)
 - [Scientific Python Discord: lock files for libraries](https://discord.com/channels/786703927705862175/1450619697224487083)
 - https://github.com/prefix-dev/pixi/issues/5325
+
+## Projects that use these actions
+
+- https://github.com/pydata/xarray
+- https://github.com/Parcels-code/parcels
